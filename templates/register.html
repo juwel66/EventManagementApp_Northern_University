@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="row justify-content-center py-4">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="mb-3">Register for: <span class="text-primary">{{ event.title }}</span></h4>
+        <div class="mb-2 small text-muted">📅 {{ event.date }}</div>
+        <div class="mb-2 small">Capacity: {{ event.capacity }} | Current: {{ count }}</div>
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Your Name</label>
+            <input name="name" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Student ID</label>
+            <input name="sid" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Active Mobile Number</label>
+            <input name="mobile" class="form-control" required>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success" type="submit" {% if count >= event.capacity %}disabled{% endif %}>Submit</button>
+            <a href="{{ url_for('events') }}" class="btn btn-outline-secondary">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

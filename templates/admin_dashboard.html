@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+  <div class="py-3">
+    <h3 class="mb-3">Admin Dashboard</h3>
+    <div class="row g-3">
+      <div class="col-sm-6 col-lg-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <div class="h1">{{ stats.events }}</div>
+            <div class="text-muted">Total Events</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <div class="h1">{{ stats.regs }}</div>
+            <div class="text-muted">Total Registrations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Registrations per Event</h5>
+        <canvas id="regChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+ <canvas id="regChart" width="400" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels = {{ series|map(attribute='title')|list|tojson }};
+const counts = {{ series|map(attribute='count')|list|tojson }};
+const capacity = {{ series|map(attribute='capacity')|list|tojson }};
+
+// Calculate registration percentage
+const percentage = counts.map((count, i) => {
+    return capacity[i] ? (count / capacity[i] * 100).toFixed(1) : 0;
+});
+
+const ctx = document.getElementById('regChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [
+            { 
+                label: 'Registrations', 
+                data: counts, 
+                backgroundColor: 'rgba(54, 162, 235, 0.6)' 
+            },
+            { 
+                label: 'Capacity', 
+                data: capacity, 
+                backgroundColor: 'rgba(255, 99, 132, 0.6)' 
+            },
+            { 
+                label: 'Filled %', 
+                data: percentage, 
+                type: 'line',        // Use line to overlay percentage
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                yAxisID: 'y1'
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } },
+        scales: { 
+            y: { 
+                beginAtZero: true,
+                title: { display: true, text: 'Count' }
+            },
+            y1: {                     // Secondary axis for percentage
+                beginAtZero: true,
+                max: 100,
+                position: 'right',
+                title: { display: true, text: 'Filled %' }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
